@@ -34,6 +34,9 @@
     "typecheck": "tsc --noEmit",
     "check:release-version": "bun scripts/check-release-version.ts",
     "pack:check": "bun run build && npm pack --dry-run",
+    "verify:pack": "node scripts/verify-pack.mjs",
+    "consumer:smoke": "node scripts/consumer-smoke.mjs",
+    "test:release-contract": "node scripts/release-contract-regression.mjs",
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
