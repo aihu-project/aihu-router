@@ -65,6 +65,11 @@ bun run pack:check
 dependencies and keeps the native server loader in its documented skip mode so
 the standalone package can be validated on a clean machine.
 
+Releases are cut from this repository with a `v<package-version>` tag. The
+release workflow validates that exact match, runs the full check/test/build and
+package dry-run gate, then publishes `@aihu/router` with the repository's
+`NPM_TOKEN` secret. Re-running a release safely skips a version already on npm.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

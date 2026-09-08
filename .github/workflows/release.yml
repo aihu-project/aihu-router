@@ -1,0 +1,72 @@
+name: Publish router
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  NPM_REGISTRY: https://registry.npmjs.org
+
+jobs:
+  publish:
+    name: Verify and publish @aihu/router
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: ${{ env.NPM_REGISTRY }}
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Verify tag matches package version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: bun run check:release-version "$RELEASE_TAG"
+      - name: Run full release gate
+        run: |
+          bun run check
+          bun run test
+          bun run build
+          npm pack --dry-run
+      - name: Authenticate npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$NODE_AUTH_TOKEN" || {
+            echo 'NPM_TOKEN repository secret is required'
+            exit 1
+          }
+          npm whoami --registry "$NPM_REGISTRY"
+      - name: Publish host package if needed
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          package_name="$(node -p "require('./package.json').name")"
+          package_version="$(node -p "require('./package.json').version")"
+          view_error="$(mktemp)"
+          trap 'rm -f "$view_error"' EXIT
+          if npm view "${package_name}@${package_version}" version --registry "$NPM_REGISTRY" >/dev/null 2>"$view_error"; then
+            echo "${package_name}@${package_version} is already published; skipping"
+          elif grep -Eq 'E404|404 Not Found' "$view_error"; then
+            npm publish --access public --registry "$NPM_REGISTRY"
+          else
+            cat "$view_error"
+            exit 1
+          fi

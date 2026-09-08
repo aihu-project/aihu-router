@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.1
+
+This release corrects the standalone GitHub and npm distribution metadata for
+`@aihu/router` and adds a tag-validated release workflow. A release tag must
+match the package version, the complete check/test/build/package gate runs
+before publishing, and retries safely skip versions already present on npm.
+
 ## 0.5.0
 
 This release preserves the router's existing browser, Vite, and server
