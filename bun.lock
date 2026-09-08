@@ -5,13 +5,13 @@
     "": {
       "name": "@aihu/router",
       "dependencies": {
-        "@aihu/context": "^0.2.0",
+        "@aihu/context": "^0.2.1",
         "@aihu/server": "^0.6.0",
         "@aihu/signals": "^0.5.1",
       },
       "devDependencies": {
         "@aihu/agent-service": "^0.4.0",
-        "@aihu/runtime": "^6.1.0",
+        "@aihu/runtime": "^6.1.1",
         "@biomejs/biome": "2.4.14",
         "@types/node": "^20.16.5",
         "jsdom": "^25.0.1",
@@ -51,7 +51,7 @@
 
     "@aihu/compiler-win32-x64-msvc": ["@aihu/compiler-win32-x64-msvc@1.3.4", "", { "os": "win32", "cpu": "x64" }, "sha512-jV9B53N9va9QMunDJXYZgppYANc5tpx7qweVsa46i3mBZ0U53J2PWjchUHGe71TZ8TBdedHI/QRDMisl6R68XQ=="],
 
-    "@aihu/context": ["@aihu/context@0.2.0", "", {}, "sha512-7L4CiMvhN/tZDTWK81FHsj+YzHJkcB6WgRv6ngDngZVFsAbBgzLVq3K+UA624UKf7SRoEBN2ygz+Rp3+Tz4jjg=="],
+    "@aihu/context": ["@aihu/context@0.2.1", "", {}, "sha512-XHB9V4jgPnA8MP1HkoYOlNiADnSLyUvsE3N8/vKIMlJDyqUiABzG7wLXw+cAschJ6EIDddlMuIGUi5a8JzKUHg=="],
 
     "@aihu/css-engine": ["@aihu/css-engine@0.6.1", "", { "dependencies": { "@aihu/compiler": "^1.3.0" }, "optionalDependencies": { "@aihu/css-engine-darwin-arm64": "0.1.17", "@aihu/css-engine-darwin-x64": "0.1.17", "@aihu/css-engine-linux-x64-gnu": "0.1.17", "@aihu/css-engine-win32-x64-msvc": "0.1.17" } }, "sha512-pGynQ5Hm87HFpj3t+SpJR5K5lUBz9on3vulNDCEFMlaP0NhwoFHshME22IBRdzsU7VMzJMTLbN1Ew237vEmNTQ=="],
 
@@ -67,7 +67,7 @@
 
     "@aihu/primitives": ["@aihu/primitives@0.2.3", "", { "dependencies": { "@aihu/arbor": "4.1.1", "@aihu/css-engine": "0.6.1", "@aihu/signals": "0.5.0" } }, "sha512-DaQragOtobcEAitZ+gTSmFJI69db6a8djKazgq5PkFchmMOMj3Khe0VE7sUVU+cqpaOR/TJvPi5yb0D7hUPiXw=="],
 
-    "@aihu/runtime": ["@aihu/runtime@6.1.0", "", { "dependencies": { "@aihu/primitives": "^0.2.3" }, "peerDependencies": { "@aihu/arbor": "^4.1.1", "@aihu/context": "^0.2.0", "@aihu/signals": "^0.5.0" } }, "sha512-u9rRbqjh9eVjdBKgeOAD7Q+Bo6mIrOt6Vqx2nH2Smneb5JJytKRvIOJct9tJZ54HQIjxH7us4QIW24vWgbqVFg=="],
+    "@aihu/runtime": ["@aihu/runtime@6.1.1", "", { "dependencies": { "@aihu/primitives": "^0.2.3" }, "peerDependencies": { "@aihu/arbor": "^4.1.2", "@aihu/context": "^0.2.0", "@aihu/signals": "^0.5.1" } }, "sha512-q5TE7oxmEWsIKp+/qlHORpk7ZpDHovostGlgDjAt4s1p87Nmyr5YlIva/5rkkE1fmBthTh7hsOX2dCqcI8KLhA=="],
 
     "@aihu/server": ["@aihu/server@0.6.0", "", { "dependencies": { "@aihu/agent": "0.2.0", "@aihu/agent-service": "0.4.0", "@aihu/plugin": "0.1.0", "@aihu/signals": "^0.5.0" }, "optionalDependencies": { "@aihu/server-darwin-arm64": "0.1.2", "@aihu/server-darwin-x64": "0.1.2", "@aihu/server-linux-x64-gnu": "0.1.2", "@aihu/server-win32-x64-msvc": "0.1.2" } }, "sha512-opgarJ3ZwoowiCo8Wj2Iq5+/WmokLGzd1x9+k2q9UR5Mso7uCn8m5r0xZaGaFtDWKlUru+Za7JrYbXkLIHL33A=="],
 
