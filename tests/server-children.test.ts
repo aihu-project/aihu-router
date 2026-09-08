@@ -2,7 +2,7 @@
  * §2a — `createServerRouter` forwards `ServerRouterOptions.children` to
  * `renderToString` on BOTH render paths.
  *
- * Before this, `packages/router/src/server.ts` forwarded `lightScopeId` and
+ * Before this, `src/server.ts` forwarded `lightScopeId` and
  * nothing else, so every request-time SSR consumer rendered a component
  * reference as an empty element with no diagnostic — the exact failure the
  * child work exists to remove, left behind at the live-SSR edge while SSG got

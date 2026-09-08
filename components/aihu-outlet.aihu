@@ -7,7 +7,7 @@
    * (RFC-A5-013). No props.
    *
    * The matched component is loaded via `route.module()` (see
-   * `packages/router/src/router.ts` `RouteModule.default`). When no route
+   * `src/router.ts` `RouteModule.default`). When no route
    * matches, the outlet renders `null` — let `<shield>` upstream catch the
    * 404 fall-through.
    */

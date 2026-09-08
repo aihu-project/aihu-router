@@ -28,23 +28,41 @@
   "sideEffects": false,
   "scripts": {
     "build": "rolldown -c",
+    "check": "bun run lint && bun run typecheck",
+    "lint": "biome ci .",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit",
+    "pack:check": "bun run build && npm pack --dry-run",
     "prepublishOnly": "bun run build"
   },
   "dependencies": {
-    "@aihu/context": "workspace:*",
-    "@aihu/server": "workspace:*",
+    "@aihu/context": "^0.2.0",
+    "@aihu/server": "^0.6.0",
     "@aihu/signals": "^0.5.1"
   },
-  "description": "File-based router for the aihu meta-framework.",
+  "description": "Opt-in file-based router and Vite integration for aihu applications.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aihu-project/aihu.git",
-    "directory": "packages/router"
+    "url": "git+https://github.com/aihu-project/aihu-router.git"
   },
-  "homepage": "https://github.com/aihu-project/aihu/tree/main/packages/router#readme",
-  "bugs": "https://github.com/aihu-project/aihu/issues",
+  "homepage": "https://github.com/aihu-project/aihu-router#readme",
+  "bugs": "https://github.com/aihu-project/aihu-router/issues",
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=20.18.0",
+    "bun": ">=1.3.0"
+  },
+  "devDependencies": {
+    "@aihu/agent-service": "^0.4.0",
+    "@aihu/runtime": "^6.1.0",
+    "@biomejs/biome": "2.4.14",
+    "@types/node": "^20.16.5",
+    "jsdom": "^25.0.1",
+    "rolldown": "^1.0.0-rc.17",
+    "rolldown-plugin-dts": "^0.23.2",
+    "typescript": "^5.6.2",
+    "vitest": "^3.2.6"
   }
 }

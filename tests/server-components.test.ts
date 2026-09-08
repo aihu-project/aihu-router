@@ -50,7 +50,7 @@ function project(files: Record<string, string>): { root: string; pages: string[]
  * heuristic here would just re-implement `readAihuLayoutComponents`, which is
  * the derivation the walk deliberately does NOT use.
  */
-function fakeDerive(source: string): string[] {
+function fakeDerive(source: string, _id: string): string[] {
   const m = /^\/\/ @schild (.+)$/m.exec(source)
   return m === null ? [] : (m[1] as string).split(',').map((s) => s.trim())
 }

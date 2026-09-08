@@ -1,0 +1,12 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.14/schema.json",
+  "files": {
+    "includes": ["src/**/*.ts", "tests/**/*.ts", "rolldown.config.ts", "vitest.config.ts"]
+  },
+  "formatter": { "enabled": true, "indentStyle": "space", "lineWidth": 100 },
+  "javascript": {
+    "formatter": { "quoteStyle": "single", "semicolons": "asNeeded", "trailingCommas": "all" }
+  },
+  "assist": { "enabled": false },
+  "linter": { "enabled": false }
+}

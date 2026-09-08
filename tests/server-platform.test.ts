@@ -56,7 +56,12 @@ function seg(pattern: string): RouteDefinition['segments'] {
 describe('plain route loaders receive the platform', () => {
   /** A route whose loader records the arguments it was called with. */
   function loaderRoute() {
-    const loader = vi.fn(async () => ({ ok: true }))
+    const loader = vi.fn(
+      async (
+        _params: Record<string, string>,
+        _ctx: { readonly request: Request; readonly url: URL; readonly platform?: unknown },
+      ) => ({ ok: true }),
+    )
     const routes: RouteDefinition[] = [
       {
         pattern: '/p',

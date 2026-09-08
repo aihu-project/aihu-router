@@ -1,98 +1,70 @@
 # @aihu/router
 
-> **Aihu** — agentic discovery and interaction, for human purpose.
+An opt-in file based router and Vite integration for aihu applications. It
+provides browser navigation primitives, route discovery, route metadata
+sidecars, layouts, middleware, and an isolated server rendering entry point.
 
-File-based router for the aihu meta-framework.
-
-Part of the **meta-framework** layer of Aihu. Provides whole-app capability — file-based routing, SSR, loaders, cookies — without the boilerplate other meta-frameworks impose. See [arch-1](../../docs/roadmap/arch-1-website.md) for the meta-framework contract.
-
-<!-- BEGIN_HANDWRITTEN: prose -->
-_(Hand-written prose lives in this block. Replace this placeholder; everything below is auto-generated.)_
-<!-- END_HANDWRITTEN: prose -->
+The router is provider neutral. It does not bundle a DOM engine, CSS engine,
+compiler, server host, or framework specific adapter. Applications choose
+those pieces independently and pass compiler hooks into the Vite integration
+when they need `.aihu` route metadata or server component pruning.
 
 ## Install
 
-<!-- BEGIN_AUTOGEN: install -->
-<!-- regenerate: bun scripts/sync-readme.ts (also runs in pre-commit + CI) -->
-
 ```bash
-npm install @aihu/router
-# or
 bun add @aihu/router
+# or
+npm install @aihu/router
 ```
 
-<sub><i>Auto-generated against `@aihu/router@0.5.0`.</i></sub>
+`@aihu/router` is intentionally opt in. Import the browser surface only when
+the application wants client routing:
 
-<!-- END_AUTOGEN: install -->
+```ts
+import { createRouter, useRoute } from '@aihu/router'
+```
 
-## Package facts
+Use the build-time and server surfaces explicitly so they do not enter a
+browser bundle:
 
-<!-- BEGIN_AUTOGEN: stats -->
-<!-- regenerate: bun scripts/sync-readme.ts (also runs in pre-commit + CI) -->
+```ts
+import { viteRouterIntegration } from '@aihu/router/plugin'
+import { createServerRouter } from '@aihu/router/server'
+```
 
-| | |
-|---|---|
-| **Version** | `0.5.0` |
-| **Tier** | B — Meta-framework — file-based router |
-| **Bundle size** | 1.71 kB (gz) — limit 2400 B |
-| **Published files** | 3 entries |
-| **License** | MIT |
+## Package boundary
 
-<sub><i>Auto-generated against `@aihu/router@0.5.0`.</i></sub>
+The package consumes published `@aihu/context`, `@aihu/server`, and
+`@aihu/signals` packages. Those are external dependencies and remain
+replaceable at the application boundary. The router does not copy their
+source, depend on the aihu compiler, or require a particular DOM or shadow
+rendering mode.
 
-<!-- END_AUTOGEN: stats -->
+The Vite integration accepts optional compiler callbacks for route metadata and
+server child-tag derivation. Without those callbacks it remains usable for
+plain TypeScript route modules and falls back to the route metadata it can
+read itself.
 
 ## Exports
 
-<!-- BEGIN_AUTOGEN: exports -->
-<!-- regenerate: bun scripts/sync-readme.ts (also runs in pre-commit + CI) -->
+- `@aihu/router` — browser-safe router and reactive route context
+- `@aihu/router/plugin` — Vite route, layout, component, and middleware discovery
+- `@aihu/router/server` — server-only request handling and SSR integration
 
-| Subpath | ESM | CJS |
-|---|---|---|
-| `.` | `./dist/index.js` | `—` |
-| `./server` | `./dist/server.js` | `—` |
-| `./plugin` | `./dist/plugin.js` | `—` |
+## Development
 
-<sub><i>Auto-generated against `@aihu/router@0.5.0`.</i></sub>
+```bash
+bun install
+bun run check
+bun run test
+bun run build
+bun run pack:check
+```
 
-<!-- END_AUTOGEN: exports -->
-
-## Dependencies
-
-<!-- BEGIN_AUTOGEN: deps -->
-<!-- regenerate: bun scripts/sync-readme.ts (also runs in pre-commit + CI) -->
-
-**Dependencies:**
-
-- `@aihu/context` — `workspace:*`
-- `@aihu/server` — `workspace:*`
-- `@aihu/signals` — `^0.5.1`
-
-<sub><i>Auto-generated against `@aihu/router@0.5.0`.</i></sub>
-
-<!-- END_AUTOGEN: deps -->
-
-## See also
-
-<!-- BEGIN_AUTOGEN: see-also -->
-<!-- regenerate: bun scripts/sync-readme.ts (also runs in pre-commit + CI) -->
-
-- [arch-1 (website)](../../docs/roadmap/arch-1-website.md)
-- [Routing & layouts guide](https://aihu.dev/guides/routing-layouts)
-- [@aihu/server](../server)
-- [Aihu framework root](../../README.md)
-
-<sub><i>Auto-generated against `@aihu/router@0.5.0`.</i></sub>
-
-<!-- END_AUTOGEN: see-also -->
+`bun run check` runs Biome and TypeScript. The test suite uses published aihu
+dependencies and keeps the native server loader in its documented skip mode so
+the standalone package can be validated on a clean machine.
 
 ## License
 
-<!-- BEGIN_AUTOGEN: license -->
-<!-- regenerate: bun scripts/sync-readme.ts (also runs in pre-commit + CI) -->
-
-MIT — see [LICENSE](../../LICENSE).
-
-<sub><i>Auto-generated against `@aihu/router@0.5.0`.</i></sub>
-
-<!-- END_AUTOGEN: license -->
+MIT. See [LICENSE](LICENSE).

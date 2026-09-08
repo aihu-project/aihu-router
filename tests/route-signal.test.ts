@@ -2,7 +2,7 @@
  * arch-5 M1 — `createRouteSignal` (RFC-A5-010 backing).
  *
  * Acceptance (§7): "Signal updates on popstate; `params` matches
- * `MatchResult.params` from `packages/router/src/router.ts:24`."
+ * `MatchResult.params` from `src/router.ts`."
  */
 
 import { runWithContext } from '@aihu/context'

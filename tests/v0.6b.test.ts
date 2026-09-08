@@ -8,7 +8,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import type { BuildConfig, BuildTarget } from '../../server/src/index.ts'
+import type { BuildConfig, BuildTarget } from '@aihu/server'
 import type { RouteDefinition } from '../src/index.ts'
 import {
   layoutTagFor,

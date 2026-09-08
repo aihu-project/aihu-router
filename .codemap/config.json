@@ -1,0 +1,23 @@
+{
+  "only": ["ts", "json", "md", "aihu"],
+  "exclude": ["dist", "coverage", "node_modules"],
+  "depth": 4,
+  "routing": {
+    "subsystems": [
+      {
+        "name": "route-codegen-contract",
+        "paths": ["src/vite-plugin.ts", "src/router.ts", "tests/"],
+        "keywords": ["RouteSidecar", "virtual:aihu-routes", "componentTagFor", "layoutTagFor"],
+        "docs": ["README.md"],
+        "note": "The route sidecar shape and generated virtual modules are string and type contracts across compiler, router, and app; import resolution cannot see those matching names."
+      },
+      {
+        "name": "component-tag-normalization",
+        "paths": ["src/vite-plugin.ts", "tests/o1b-components.test.ts"],
+        "keywords": ["componentTagFor", "kebab", "custom-element"],
+        "docs": ["README.md"],
+        "note": "The tag normalizer is intentionally duplicated at the compiler boundary; codemap cannot follow a copied algorithm across repositories."
+      }
+    ]
+  }
+}
