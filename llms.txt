@@ -123,13 +123,13 @@ $beforeNavigate((to, from, next) => { next() })
 @route { path: "/posts/:slug" }
 ```
 
-### 5. Do not use bare `<a href>` for internal SPA links — navigation bypasses the router
+### 5. Do not trigger internal navigation via `window.location` — it bypasses the router
 
 ```html
-<!-- WRONG — full page reload; router state is lost -->
-<a href="/posts">Posts</a>
+<!-- WRONG — full page reload; router state and reactive route data are lost -->
+<button onclick="window.location.href = '/posts'">Posts</button>
 
-<!-- CORRECT — SPA navigation via <a> -->
+<!-- CORRECT — internal <a href> is automatically SPA-enhanced (see idiom 3) -->
 <a href="/posts">Posts</a>
 ```
 
@@ -141,6 +141,3 @@ $beforeNavigate((to, from, next) => { next() })
 - The standalone aihu-compiler emitter — `createRouterBoundary` / `createOutletBoundary` /
   `createNavigateBoundary`: `<router>`, `<outlet>` and `<navigate>` are compiler-lowered
   framework elements, NOT SFCs. (`<a href>` is a plain anchor; there is no `<link>` component.)
-- `examples/blog-router/src/pages/index.aihu` — basic routing with `$each` list
-- `examples/blog-router/src/pages/posts/[slug].aihu` — dynamic route param access
-- `examples/hacker-news/src/pages/index.aihu` — SSR route with loader data
