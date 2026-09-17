@@ -215,4 +215,23 @@ describe('@aihu/router — viteRouterPlugin', () => {
     expect(plugin.resolveId).toBeDefined()
     expect(plugin.load).toBeDefined()
   })
+
+  it('exposes resolved options via the declareAihuModule contract', () => {
+    const plugin = viteRouterPlugin({ pagesDir: 'custom-pages' })
+    expect(plugin.api?.aihuModule).toBe('@aihu/router')
+    expect(plugin.api?.getOptions()).toEqual({
+      pagesDir: 'custom-pages',
+      layoutsDir: 'src/layouts',
+      componentsDir: 'src/components',
+    })
+  })
+
+  it('reflects defaults, not a stale value, when no options are passed', () => {
+    const plugin = viteRouterPlugin()
+    expect(plugin.api?.getOptions()).toEqual({
+      pagesDir: 'pages',
+      layoutsDir: 'src/layouts',
+      componentsDir: 'src/components',
+    })
+  })
 })

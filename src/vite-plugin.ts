@@ -4,8 +4,22 @@ import { jsSourceLiteral } from './codegen.ts'
 import type { RouteHead, RouteSegment } from './router.ts'
 
 /** @internal */
+interface AihuModuleApi<TOptions> {
+  aihuModule: string
+  getOptions: () => TOptions
+}
+
+/** The post-defaults options `viteRouterPlugin` actually resolved. */
+interface ResolvedRouterOptions {
+  pagesDir: string
+  layoutsDir: string
+  componentsDir: string
+}
+
+/** @internal */
 interface VitePlugin {
   name: string
+  api?: AihuModuleApi<ResolvedRouterOptions>
   resolveId?: (id: string) => string | null | undefined
   load?: (id: string) => string | null | undefined
   configureServer?: (server: {
@@ -15,6 +29,29 @@ interface VitePlugin {
       invalidateModule(m: { id: string }): void
     }
   }) => void
+}
+
+/**
+ * `aihu-project/aihu`'s CLI/language-server config contract
+ * (`declareAihuModule` in `packages/app/src/load-config.ts`), copied here
+ * rather than taken as a dependency on `@aihu/app` for one helper — same
+ * precedent as `layoutTagFor`/`componentTagFor` above. Attaches
+ * `{ aihuModule, getOptions }` to the first plugin in `plugins` (merged with
+ * any `api` it already carries, never overwritten), so `loadAihuConfig()` can
+ * read back the options this build actually resolved. `options` is captured
+ * by reference at call time, not copied.
+ */
+function declareAihuModule<TOptions, TPlugins extends readonly unknown[]>(
+  aihuModule: string,
+  options: TOptions,
+  plugins: TPlugins,
+): TPlugins {
+  const first = plugins[0] as { api?: unknown } | undefined
+  if (first && typeof first === 'object') {
+    const api: AihuModuleApi<TOptions> = { aihuModule, getOptions: () => options }
+    first.api = Object.assign({}, first.api ?? {}, api)
+  }
+  return plugins
 }
 
 const RR = '\0virtual:aihu-routes'
@@ -929,7 +966,7 @@ export function viteRouterPlugin(opts?: RouterPluginOptions): VitePlugin {
     cl: string | null = null,
     cc: string | null = null,
     csc: string | null = null
-  return {
+  const plugin: VitePlugin = {
     name: 'aihu-router',
     resolveId: (id) =>
       id === 'virtual:aihu-routes'
@@ -1037,6 +1074,11 @@ export function viteRouterPlugin(opts?: RouterPluginOptions): VitePlugin {
       server.watcher.on('unlink', invalidateAll)
     },
   }
+  return declareAihuModule<ResolvedRouterOptions, [VitePlugin]>(
+    '@aihu/router',
+    { pagesDir: pd, layoutsDir: ld, componentsDir: cd },
+    [plugin],
+  )[0]
 }
 
 // ---------------------------------------------------------------------------
