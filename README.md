@@ -32,6 +32,13 @@ import { viteRouterIntegration } from '@aihu/router/plugin'
 import { createServerRouter } from '@aihu/router/server'
 ```
 
+Compose isomorphic middleware (it runs unchanged on both the browser and the
+server) with the same `@aihu/router` entry point:
+
+```ts
+import { composeRouterMiddleware, defineRouterMiddleware } from '@aihu/router'
+```
+
 ## Package boundary
 
 The package consumes published `@aihu/context`, `@aihu/server`, and
