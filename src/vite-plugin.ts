@@ -8,6 +8,7 @@ interface VitePlugin {
   name: string
   resolveId?: (id: string) => string | null | undefined
   load?: (id: string) => string | null | undefined
+  configResolved?: (config: { root: string }) => void
   configureServer?: (server: {
     watcher: { add(p: string): void; on(e: string, cb: (p: string) => void): void }
     moduleGraph: {
@@ -924,6 +925,13 @@ export function viteRouterPlugin(opts?: RouterPluginOptions): VitePlugin {
   const pd = opts?.pagesDir ?? 'pages',
     ld = opts?.layoutsDir ?? 'src/layouts',
     cd = opts?.componentsDir ?? 'src/components'
+  // `process.cwd()` is a last-resort fallback for a plugin instance driven
+  // outside Vite's own lifecycle (e.g. a unit test that never fires
+  // `configResolved`). Both `vite build` and `vite dev` always call
+  // `configResolved` before `resolveId`/`load` run, so in every real build
+  // this is immediately overwritten by Vite's own resolved project root —
+  // fixing the case where the shell's cwd differs from the Vite root (e.g. a
+  // monorepo build invoked from the repo root via `--config`).
   let root = process.cwd(),
     cr: string | null = null,
     cl: string | null = null,
@@ -931,6 +939,9 @@ export function viteRouterPlugin(opts?: RouterPluginOptions): VitePlugin {
     csc: string | null = null
   return {
     name: 'aihu-router',
+    configResolved(config) {
+      if (config?.root) root = config.root
+    },
     resolveId: (id) =>
       id === 'virtual:aihu-routes'
         ? RR

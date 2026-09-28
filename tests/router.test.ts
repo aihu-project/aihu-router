@@ -1,3 +1,6 @@
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import type { RouteDefinition } from '../src/index.ts'
 import { createRouter } from '../src/index.ts'
@@ -214,5 +217,27 @@ describe('@aihu/router — viteRouterPlugin', () => {
     // Plugin should be constructable without errors
     expect(plugin.resolveId).toBeDefined()
     expect(plugin.load).toBeDefined()
+  })
+
+  // Regression for the build path (`vite build`, which never calls
+  // `configureServer`): with no explicit `pagesDir`, the default must resolve
+  // against Vite's own project root — delivered via `configResolved`, the
+  // hook both `vite build` and `vite dev` always call — not the process's
+  // cwd, which can differ from the project root (e.g. a monorepo build
+  // invoked from the repo root via `--config`).
+  it('resolves the default pagesDir against the root from configResolved, not process.cwd()', () => {
+    const tmp = mkdtempSync(join(tmpdir(), 'aihu-router-root-'))
+    const pagesTmp = join(tmp, 'pages')
+    mkdirSync(pagesTmp)
+    try {
+      writeFileSync(join(pagesTmp, 'about.aihu'), '@template { <div>about</div> }\n')
+      const plugin = viteRouterPlugin()
+      expect(tmp).not.toBe(process.cwd())
+      plugin.configResolved?.({ root: tmp })
+      const content = plugin.load?.('\0virtual:aihu-routes') as string
+      expect(content).toContain('"/about"')
+    } finally {
+      rmSync(tmp, { recursive: true, force: true })
+    }
   })
 })
