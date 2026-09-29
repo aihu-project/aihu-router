@@ -100,6 +100,68 @@ describe('<a> — click intercepts and SPA-navigates', () => {
     dispose()
   })
 
+  it('navigate() to a same-page fragment scrolls the target into view and focuses it', async () => {
+    const { map, dispose } = makeContext([userRoute('/'), userRoute('/other')])
+    window.history.replaceState(null, '', '/other')
+    const target = document.createElement('div')
+    target.id = 'target'
+    // jsdom does not implement scrollIntoView — stub it so it can be spied on.
+    target.scrollIntoView = () => {}
+    document.body.appendChild(target)
+    const scrollSpy = vi.spyOn(target, 'scrollIntoView')
+    try {
+      await runWithContext(map, async () => {
+        await navigate('/other#target')
+      })
+      expect(window.location.hash).toBe('#target')
+      expect(scrollSpy).toHaveBeenCalled()
+      expect(document.activeElement).toBe(target)
+      expect(target.getAttribute('tabindex')).toBe('-1')
+    } finally {
+      scrollSpy.mockRestore()
+      target.remove()
+      dispose()
+    }
+  })
+
+  it('navigate() to a fragment matching an anchor `name` scrolls and focuses it', async () => {
+    const { map, dispose } = makeContext([userRoute('/'), userRoute('/other')])
+    window.history.replaceState(null, '', '/other')
+    const anchor = document.createElement('a')
+    anchor.name = 'named-target'
+    anchor.scrollIntoView = () => {}
+    document.body.appendChild(anchor)
+    const scrollSpy = vi.spyOn(anchor, 'scrollIntoView')
+    try {
+      await runWithContext(map, async () => {
+        await navigate('/other#named-target')
+      })
+      expect(scrollSpy).toHaveBeenCalled()
+      expect(document.activeElement).toBe(anchor)
+    } finally {
+      scrollSpy.mockRestore()
+      anchor.remove()
+      dispose()
+    }
+  })
+
+  it('navigate() without a fragment does not touch scroll or focus', async () => {
+    const { map, dispose } = makeContext([userRoute('/'), userRoute('/other')])
+    window.history.replaceState(null, '', '/')
+    const button = document.createElement('button')
+    document.body.appendChild(button)
+    button.focus()
+    try {
+      await runWithContext(map, async () => {
+        await navigate('/other')
+      })
+      expect(document.activeElement).toBe(button)
+    } finally {
+      button.remove()
+      dispose()
+    }
+  })
+
   it('aria-current matching: only active pathname is "page"', () => {
     const { map, dispose } = makeContext([userRoute('/'), userRoute('/x')])
     window.history.replaceState(null, '', '/x')

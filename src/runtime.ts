@@ -11,7 +11,8 @@
  * - Compiler hook seams for `$beforeNavigate` / `$afterNavigate`:
  *   `__router_registerBeforeGuard`, `__router_registerAfterGuard`
  * - `navigate(href, opts)` — programmatic SPA navigation (used by `<a>` and
- *   `<navigate>`)
+ *   `<navigate>`); reimplements native same-document fragment navigation
+ *   (scroll + focus) since the click that triggers it is intercepted
  * - `createPrefetcher(href, mode)` — `<a prefetch>` helper
  *
  * Browser-only behavior is gated on `typeof window !== 'undefined'` so the
@@ -202,6 +203,7 @@ async function navigateWithContext(
     if (opts.replace) SAFE_WINDOW.history.replaceState(null, '', href)
     else SAFE_WINDOW.history.pushState(null, '', href)
     setRouteSignal(ctx, target)
+    navigateToFragment(url.hash)
   }
 
   const useVT =
@@ -223,6 +225,61 @@ async function navigateWithContext(
 
   ctx.router.runAfterGuards(target, from)
   return 'navigated'
+}
+
+/**
+ * Reimplement native same-document fragment navigation (scroll + focus) for
+ * a client-side `navigate()` call. Intercepting the click to run SPA
+ * navigation suppresses the browser's own fragment handling, so `navigate()`
+ * must supply the equivalent itself once the URL/history update lands.
+ *
+ * Resolves the fragment the same way the HTML spec's "scroll to the
+ * fragment" algorithm does: an element whose `id` matches, falling back to
+ * an anchor whose `name` matches. An empty fragment (`#` or no hash) is a
+ * no-op — the empty-fragment "scroll to the top" case is left to normal
+ * unmodified navigation, matching the issue's "no change to normal nav"
+ * acceptance criterion.
+ *
+ * The target may not exist in the DOM yet (an outlet re-render triggered by
+ * the just-written route signal can land on the next animation frame), so a
+ * lookup that misses is retried once via `requestAnimationFrame` before
+ * giving up.
+ */
+function navigateToFragment(hash: string): void {
+  if (!SAFE_WINDOW || !hash || hash === '#') return
+  const id = decodeURIComponent(hash.slice(1))
+  if (!id) return
+
+  const focusTarget = (el: Element): void => {
+    if (!(el instanceof HTMLElement)) {
+      el.scrollIntoView()
+      return
+    }
+    el.scrollIntoView()
+    const hadTabIndex = el.hasAttribute('tabindex')
+    if (!hadTabIndex) el.setAttribute('tabindex', '-1')
+    el.focus({ preventScroll: true })
+    if (!hadTabIndex) {
+      const clearTabIndex = (): void => {
+        el.removeAttribute('tabindex')
+        el.removeEventListener('blur', clearTabIndex)
+      }
+      el.addEventListener('blur', clearTabIndex)
+    }
+  }
+
+  const resolve = (): Element | null =>
+    document.getElementById(id) ?? document.getElementsByName(id)[0] ?? null
+
+  const el = resolve()
+  if (el) {
+    focusTarget(el)
+    return
+  }
+  SAFE_WINDOW.requestAnimationFrame(() => {
+    const retried = resolve()
+    if (retried) focusTarget(retried)
+  })
 }
 
 // ---------------------------------------------------------------------------
